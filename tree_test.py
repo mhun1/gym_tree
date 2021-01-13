@@ -84,8 +84,11 @@ expressionTree.insert('+')
 expressionTree.insert('x')
 expressionTree.insert('+')
 expressionTree.insert('y')
+expressionTree.insert('+')
 expressionTree.insert('x')
-
+expressionTree.insert('*')
+expressionTree.insert('2')
+expressionTree.insert('x')
 
 
 import math
@@ -104,22 +107,38 @@ print(expression_string)
 
 def find_operator(stack):
     op_list = ["+","-","*","/"]
-    print(stack)
     length = len(stack) - 1
-    print("Length: ", length)
+    occurence = []
     for op in op_list:
         idx = 0
         for lit in reversed(stack):
-            print(lit,idx)
             if lit == op:
-                return length - idx
+                occurence.append(length-idx)
             idx += 1
-    return -1
+    return occurence
 
-def processing(stack):
-
+def processing(left,stack):
     op_idx = find_operator(stack)
-    print("found it:  ", op_idx)
+    op_idx.sort()
+    print(stack)
+
+    if len(op_idx) > 1:
+        first_idx = op_idx[len(op_idx)-1]
+        second_idx = op_idx[len(op_idx)-2]
+    else:
+        first_idx = op_idx[0]
+        second_idx = -1
+    print("found first:  ", first_idx)
+    print("found sec:  ", second_idx)
+    #print(stack[second_idx+1:first_idx])
+
+    left_val = (stack[second_idx+1:first_idx])
+    right_val = ''.join(stack[first_idx+1:len(stack)])
+    operator = stack[first_idx]
+    print(left_val)
+    print(right_val)
+    print(operator)
+
     right = stack.pop()  # get right number
 
 
@@ -131,6 +150,7 @@ def processing(stack):
         right = assignment[right]
     else:
         right = int(right)
+
     operator = stack.pop()  # get operator
 
 
@@ -162,7 +182,8 @@ def calculate(expression):
     for char in expression:
 
         if count+1 < length:
-            if ord(expression[count+1]):
+            nxt_char = expression[count+1]
+            if ord(nxt_char) and nxt_char != ')' and nxt_char != '(':
                 stack.append(char)
                 count+=1
                 continue
@@ -170,12 +191,12 @@ def calculate(expression):
         stack.append(char)
         if char == ')':
             stack.pop()
-            left, stack = processing(stack)
+            left, stack = processing(left,stack)
             stack.pop()
             stack.append(left)
 
         if count == len(expression)-1: # last char of expression string
-            left, stack = processing(stack)
+            left, stack = processing(left,stack)
         count += 1
     return left
 

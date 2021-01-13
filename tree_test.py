@@ -81,8 +81,11 @@ class ExpressionTree:
 
 expressionTree = ExpressionTree()
 expressionTree.insert('+')
-expressionTree.insert('log')
+expressionTree.insert('x')
+expressionTree.insert('+')
 expressionTree.insert('y')
+expressionTree.insert('x')
+
 
 
 import math
@@ -99,16 +102,40 @@ expression_string = ''.join(arr[1:-1])
 print(expression_string)
 
 
-def processing(left, stack):
+def find_operator(stack):
+    op_list = ["+","-","*","/"]
+    print(stack)
+    length = len(stack) - 1
+    print("Length: ", length)
+    for op in op_list:
+        idx = 0
+        for lit in reversed(stack):
+            print(lit,idx)
+            if lit == op:
+                return length - idx
+            idx += 1
+    return -1
+
+def processing(stack):
+
+    op_idx = find_operator(stack)
+    print("found it:  ", op_idx)
     right = stack.pop()  # get right number
 
+
+
+
+    #TODO: search for operator and split by idx
+    #print(right)
     if right in assignment.keys():
         right = assignment[right]
     else:
         right = int(right)
     operator = stack.pop()  # get operator
 
+
     left = stack.pop()  # get left number
+
     if left in assignment.keys():
         left = assignment[left]
     else:
@@ -131,17 +158,24 @@ def calculate(expression):
     count = 0
     left = 0
     #TODO: ADD SUPPORT FOR MULTIPLE LITERALS
+    length = len(expression)
     for char in expression:
-        print(char)
+
+        if count+1 < length:
+            if ord(expression[count+1]):
+                stack.append(char)
+                count+=1
+                continue
+
         stack.append(char)
         if char == ')':
             stack.pop()
-            left, stack = processing(left, stack)
+            left, stack = processing(stack)
             stack.pop()
             stack.append(left)
 
         if count == len(expression)-1: # last char of expression string
-            left, stack = processing(left, stack)
+            left, stack = processing(stack)
         count += 1
     return left
 
